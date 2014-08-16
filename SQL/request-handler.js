@@ -13,13 +13,15 @@ exports.postMessage = function(req, res) {
   var message;
 
   var resultsCallback = function (results) {
+    console.log('before chats: ',results)
       var chat = {
         message: message.message,
-        userid: results[0].id,
+        userid: results[0].user_ID,
         roomname: message.roomname
       };
-
+      console.log('from inside resultsCallback post message: ', chat)
       saveMessage(chat.message, chat.userid, chat.roomname, function () {
+        console.log("from inside saveMessage: ", chat.message, chat.userid)
         serverHelpers.sendResponse(res, message);
       });
   };
@@ -29,10 +31,12 @@ exports.postMessage = function(req, res) {
       findUser(msg.username, function (err, results) {
         // no results/0 results
         if (!results || !results.length) {
+          console.log('if')
           // create the user, then post the message
           saveUser(message.username, resultsCallback);
         } else {
           // user exists, post the message to this user
+          console.log('else')
           resultsCallback(results);
         }
       });
